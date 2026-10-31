@@ -1,0 +1,8 @@
+---
+# This script copies server configuration into local config files. 
+- hosts: server
+  become: true
+  gather_facts: false
+  tasks:
+  - name: Backup interfaces file
+    fetch: src=/etc/network/interfaces dest=./config/{{inventory_hostname}}/interfaces flat=yes

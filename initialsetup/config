@@ -1,0 +1,19 @@
+Host leaf01
+        HostName leaf01
+        User admin                
+
+Host leaf02
+        HostName leaf02
+        User admin                
+
+Host leaf03
+        HostName leaf03
+        User admin                          
+
+Host spine01
+        HostName spine01
+        User admin                
+
+Host spine02
+        HostName spine02
+        User admin                

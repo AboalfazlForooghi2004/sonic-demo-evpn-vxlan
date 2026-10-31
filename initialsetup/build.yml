@@ -1,0 +1,38 @@
+---
+- hosts: localhost
+  become: true
+  gather_facts: false
+  tasks:
+  - name: copy SSH config to simplify connectivity from oob-mgmt-server to nodes
+    copy:
+      src: config
+      dest: /home/cumulus/.ssh/config
+      owner: cumulus
+      group: cumulus
+      mode: '0644'
+
+  - name: copy Ansible hosts file over
+    copy:
+      src: hosts
+      dest: /etc/ansible/hosts
+
+  - name: Set cumulus user password back to default
+    user:
+      name: cumulus
+      password: $1$8WOBD1pA$uph5ks6BG29F12dt/ORmE0
+
+  - name: Force a password change on first login
+    shell: passwd --expire cumulus
+
+  - name: Clear history
+    shell: history -c
+
+- hosts: leaf spine exit
+  become: true
+  gather_facts: false
+  tasks:
+  - name: copy SSH keys to SONiC nodes
+    authorized_key:
+      user: admin
+      state: present
+      key: "{{ lookup('file', '/home/cumulus/.ssh/id_rsa.pub') }}"

@@ -1,0 +1,11 @@
+---
+# This script copies leaf and spine configuration into local config files (split-unified mode). 
+- hosts: leaf spine
+  become: true
+  gather_facts: false
+  tasks:
+  - name: Backup ConfigDB.json 
+    fetch: src=/etc/sonic/config_db.json dest=./config/{{inventory_hostname}}/config_db.json flat=yes
+
+  - name: Backup FRR BGP configuration (split-unified)
+    fetch: src=/etc/sonic/frr/frr.conf dest=./config/{{inventory_hostname}}/frr.conf flat=yes

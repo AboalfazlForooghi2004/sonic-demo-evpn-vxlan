@@ -1,0 +1,25 @@
+graph "SONiC BGP EVPN VXLAN" {
+  "spine02" [ function="spine" memory="4096" os="sonic-vs-202305" cpu="2"]
+  "leaf01" [ function="leaf" memory="4096" os="sonic-vs-202305" cpu="2"]
+  "leaf02" [ function="leaf" memory="4096" os="sonic-vs-202305" cpu="2"]
+  "leaf03" [ function="leaf" memory="4096" os="sonic-vs-202305" cpu="2"]
+  "server01" [ function="server" memory="2048" os="generic/ubuntu2404" cpu="2"]
+  "server02" [ function="server" memory="2048" os="generic/ubuntu2404" cpu="2"]
+  "server03" [ function="server" memory="2048" os="generic/ubuntu2404" cpu="2"]
+  "server04" [ function="server" memory="2048" os="generic/ubuntu2404" cpu="2"]
+  "server05" [ function="server" memory="2048" os="generic/ubuntu2404" cpu="2"]
+  "server06" [ function="server" memory="2048" os="generic/ubuntu2404" cpu="2"]
+  "spine01" [ function="spine" memory="4096" os="sonic-vs-202305" cpu="2"]
+    "spine02":"eth3" -- "leaf03":"eth4"
+    "leaf03":"eth1" -- "server05":"eth1"
+    "leaf03":"eth2" -- "server06":"eth1"
+    "leaf01":"eth1" -- "server01":"eth1"
+    "leaf01":"eth2" -- "server02":"eth1"
+    "spine02":"eth1" -- "leaf01":"eth4"
+    "leaf02":"eth4" -- "spine02":"eth2"
+    "leaf02":"eth1" -- "server03":"eth1"
+    "leaf02":"eth2" -- "server04":"eth1"
+    "spine01":"eth1" -- "leaf01":"eth3"
+    "spine01":"eth2" -- "leaf02":"eth3"
+    "spine01":"eth3" -- "leaf03":"eth3"
+}

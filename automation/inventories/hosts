@@ -1,0 +1,23 @@
+[leaf]
+leaf01 ansible_user=admin ansible_ssh_pass=YourPaSsWoRd
+leaf02 ansible_user=admin ansible_ssh_pass=YourPaSsWoRd
+leaf03 ansible_user=admin ansible_ssh_pass=YourPaSsWoRd
+
+[spine]
+spine01 ansible_user=admin ansible_ssh_pass=YourPaSsWoRd
+spine02 ansible_user=admin ansible_ssh_pass=YourPaSsWoRd
+
+[server]
+server01
+server02
+server03
+server04
+server05
+server06
+
+[pod1:children]
+leaf
+server
+
+[netq]
+netq-ts

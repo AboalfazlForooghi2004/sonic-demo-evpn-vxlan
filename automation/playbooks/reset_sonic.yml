@@ -1,0 +1,45 @@
+---
+# This script removes user-created configuration on the SONiC system.
+- hosts: spine leaf
+  vars:
+    ansible_user: admin
+    ansible_ssh_pass: YourPaSsWoRd
+  become: true
+  gather_facts: false
+  tasks:
+  # Remove ConfigDB. 
+  - name: Remove ConfigDB.json
+    ansible.builtin.file: 
+      path: /etc/sonic/config_db.json
+      state: absent
+    notify: Reboot system
+
+  # Remove FRR BGP configuration (split).
+  - name: Remove FRR BGP configuration (split)
+    ansible.builtin.file: 
+      path: /etc/sonic/frr/bgpd.conf
+      state: absent
+    notify: Reboot system
+
+  # Remove FRR BGP configuration (split-unified).
+  - name: Remove FRR BGP configuration (split-unified)
+    ansible.builtin.file: 
+      path: /etc/sonic/frr/frr.conf
+      state: absent
+    notify: Reboot system
+
+  handlers:
+  # Reboot system.
+  - name: Reboot system
+    shell: reboot
+    ignore_errors: true
+    listen: "Reboot system"
+
+  # Give system time to come back online.
+  - name: Wait for system to come back online
+    wait_for_connection:
+      connect_timeout: 60
+      sleep: 5
+      delay: 5
+      timeout: 300
+    listen: "Reboot system"

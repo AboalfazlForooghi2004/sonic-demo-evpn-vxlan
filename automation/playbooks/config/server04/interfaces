@@ -1,0 +1,16 @@
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+auto lo:10
+iface lo:10 inet static
+    address 192.168.255.4/32
+
+# The OOB network interface
+auto eth0
+iface eth0 inet dhcp
+
+# The data plane network interfaces
+auto eth1
+iface eth1 inet static
+    address 172.16.20.104/24

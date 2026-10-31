@@ -1,0 +1,49 @@
+---
+# This script configures the spine and leaf switches for split-unified mode.
+- hosts: spine leaf
+  vars:
+    ansible_user: admin
+    ansible_ssh_pass: YourPaSsWoRd
+  become: true
+  gather_facts: false
+  tasks:
+
+  # Configure ConfigDB.
+  - name: Configure ConfigDB.json
+    copy: src=./config/{{inventory_hostname}}/config_db.json dest=/etc/sonic/config_db.json
+    notify: Reload SONiCDB config
+
+  # Configure FRR BGP configuration (split-unified).
+  - name: Configure FRR BGP configuration (split-unified)
+    copy: src=./config/{{inventory_hostname}}/frr.conf dest=/etc/sonic/frr/frr.conf
+    notify: Reload SONiCDB config
+
+  # Increase maximum transfer unit (MTU) for handling larger
+  # VxLAN frames on an Ethernet network.
+  - name: Set eth[1-9] MTU to 9238
+    shell: |
+      for i in $(ip link | grep eth[1-9] | awk -F':' '{print $2}'); do
+        ip link set mtu 9238 $i
+      done
+    args:
+      executable: /bin/bash
+
+  # DROP rules shipped with SONiC meant for hardware can cause issues 
+  # for virtual switches. Ignore them.
+  - name: Check ebtables.filter
+    stat: path=/etc/ebtables.filter
+    register: ebtables_stat
+
+  - name: Disable default ebtables DROP rules
+    command: mv /etc/ebtables.filter /etc/ebtables.filter.disabled
+    when: ebtables_stat.stat.exists
+    notify: Flush ebtables
+
+  handlers:
+  # Reload SONiCDB Config if either FRR or ConfigDB.json changed.
+  - name: Reload SONiCDB config
+    shell: config reload -y -f
+
+  # Flush ebtables.
+  - name: Flush ebtables
+    shell: ebtables -F
